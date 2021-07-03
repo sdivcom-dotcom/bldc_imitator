@@ -29,13 +29,24 @@ int sineArraySize;
 int increment = 0;
 boolean direct = 1; // direction true=forward, false=backward
 
-uint32_t step_speed = 10;//скорость 
+uint32_t step_speed = 13;//скорость 
+//13 это 110
+//14 это 100
+//16 это 90
+//18 это 80
+//20 это 70
+//24 это 60
+//28 это 50
+//35 это 40
+//50 это 30
+//75 это 20
+//260 это 10
 uint32_t step_speed_counter = 0;
-
+uint32_t val;
 //////////////////////////////////////////////////////////////////////////////
 
 void setup() {
-
+Serial.begin(9600);
   setPwmFrequency(IN1); // Increase PWM frequency to 32 kHz  (make unaudible)
   setPwmFrequency(IN2);
   setPwmFrequency(IN3);
@@ -83,12 +94,15 @@ void step(uint32_t increment){
 }
 
 void loop() {
-  
+  if (Serial.available()) {
+
+val = Serial.read();
+val = step_speed;
   if (step_speed_counter<step_speed){
     step_speed_counter++;
   }
   else{
-    step(+10);
+    step(+20);
     step_speed_counter = 0;
     //delay(1);
   }
@@ -98,6 +112,8 @@ void loop() {
   analogWrite(IN3, pwmSin[currentStepC]);  
   
 }
+}
+
 
 
 void setPwmFrequency(int pin) {
