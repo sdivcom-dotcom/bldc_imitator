@@ -43,9 +43,13 @@ uint32_t step_speed = 10;//скорость
 //260 это 10
 uint32_t step_speed_counter = 0;
 uint32_t val;
+uint32_t value_recive;
 //////////////////////////////////////////////////////////////////////////////
 
 void setup() {
+  
+  Serial.begin(115200);
+
   setPwmFrequency(IN1); // Increase PWM frequency to 32 kHz  (make unaudible)
   setPwmFrequency(IN2);
   setPwmFrequency(IN3);
@@ -93,20 +97,35 @@ void step(uint32_t increment){
 }
 
 void loop() {
-
-if (step_speed_counter<step_speed){
+  while (Serial.avalable()){
+    uint8_t _char = Serial.read();
+    
+    if((_char>=0x30)&&(_char<=0x39)){
+      value_recive *=10;
+      value_recive += _char - 0x30;
+      Serial.write(_char);
+    }
+    else{
+      step_speed = value_recive;
+      value_recive = 0;
+      Serial.write("/n");
+      Serial.write("accept /n");
+      break;
+    }
+  }
+  if (step_speed_counter<step_speed){
     step_speed_counter++;
   }
   else{
-    step(+20);
+    step(+2);
     step_speed_counter = 0;
-    //delay(1);
-  }
-
+  
   analogWrite(IN1, pwmSin[currentStepA]);
   analogWrite(IN2, pwmSin[currentStepB]);
   analogWrite(IN3, pwmSin[currentStepC]);  
   }
+
+}
 
 void setPwmFrequency(int pin) {
   if(pin == 5 || pin == 6 || pin == 9 || pin == 10) {
