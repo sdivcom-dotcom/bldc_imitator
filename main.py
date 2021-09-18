@@ -7,39 +7,28 @@ UDP_IP = "127.0.0.1"
 ser.port = 'COM15'
 UDP_PORT = 6789
 vald = 0
-file = open("text.txt", "w")
+#file = open("text.txt", "w")
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 sock.bind((UDP_IP, UDP_PORT))
 ser.open()
 while True:
-    data, addr = sock.recvfrom(4096) # buffer size is 1024 bytes
+    data, addr = sock.recvfrom(4096)
     #print("received message: %s" % data)
 
-    val = data[84:86]#
+    val = data[83:85]#
     print("Обороты")
     print(val)
-    vald = int.from_bytes(val, byteorder='little')
-    print(vald)
-    #file.write(vald)
-    #file.write('\n')
-    #vald = 3
 
-    if vald == 12336:
-        #val_str = vald.str().encode('ascii')
-        #print(val_str)
-        space = " "
-        space_ascii = space.__str__().encode('ascii')
-        ser.write(b'3')
-        ser.write(space_ascii)
+    val_int = int(val)
 
-    if vald >= 12341:
-        #val_str = vald.str().encode('ascii')
-        #print(val_str)
-        space = " "
-        space_ascii = space.__str__().encode('ascii')
-        ser.write(b'24')
-        ser.write(space_ascii)
+    output =  -0.0000000201*val_int**5 + 0.0000251929*val_int**4 - 0.0062263101*val_int**3 + 0.6109802929*val_int**2 - 26.2751507531*val_int + 435.3499760973
+    output_int = int(output)
+    val_str = output_int.str().encode('ascii')
+    print(val_str)
+    space = " "
+    space_ascii = space.str().encode('ascii')
+    ser.write(val_str)
+    ser.write(space_ascii)
 
     #ser.write("//n")
-    file.close()
